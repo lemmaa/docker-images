@@ -26,7 +26,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gcc-arm-linux-gnueabihf g+
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
 # install tools for build-rootfs.sh run
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install qemu binfmt-support qemu-user-static debootstrap
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install qemu binfmt-support qemu-user-static debootstrap libxml2-utils rpm2cpio
 
 # add user `dotnet`
 RUN useradd -u 1000 -s /bin/bash -m dotnet && passwd -d dotnet && cp /root/.bashrc /home/dotnet && cp /root/.profile /home/dotnet && chown -R dotnet.dotnet /home/dotnet && sed -e "/^sudo:/s/$/dotnet/" /etc/group > /etc/group.new && mv /etc/group.new /etc/group
