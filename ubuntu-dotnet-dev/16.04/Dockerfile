@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install cmake llvm-3.8 clang-3.8 l
 
 # install dependendies for corefx
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git clang-3.8 cmake make libc6-dev libssl-dev libkrb5-dev libcurl4-openssl-dev zlib1g-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libunwind8 libicu52 curl
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libunwind8 libicu55 curl
 
 # install toolchain for linux-arm target build
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
