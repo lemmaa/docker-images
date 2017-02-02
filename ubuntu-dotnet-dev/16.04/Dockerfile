@@ -7,10 +7,6 @@ MAINTAINER Sung-Jae Lee <sjlee@mail.com>
 
 # initialize apt-get db & key
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
-#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget
-#RUN echo "deb http://llvm.org/apt-get/trusty/ llvm-toolchain-trusty-3.8 main" | sudo tee /etc/apt-get/sources.list.d/llvm.list
-#RUN wget -O - http://llvm.org/apt-get/llvm-snapshot.gpg.key | sudo apt-get-key add -
-#RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 # install dependencies for coreclr
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install cmake llvm-3.8 clang-3.8 lldb-3.8 lldb-3.8-dev libunwind8 libunwind8-dev gettext libicu-dev liblttng-ust-dev libcurl4-openssl-dev libssl-dev uuid-dev
@@ -30,6 +26,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install qemu binfmt-support qemu-u
 
 # add user `dotnet`
 RUN useradd -u 1000 -s /bin/bash -m dotnet && passwd -d dotnet && cp /root/.bashrc /home/dotnet && cp /root/.profile /home/dotnet && chown -R dotnet.dotnet /home/dotnet && sed -e "/^sudo:/s/$/dotnet/" /etc/group > /etc/group.new && mv /etc/group.new /etc/group
+
+# install missing utilities
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install sudo
 
 #
 # setup source repo
