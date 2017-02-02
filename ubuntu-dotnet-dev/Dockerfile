@@ -8,15 +8,17 @@ MAINTAINER Sung-Jae Lee <sjlee@mail.com>
 # initialize apt-get db & key
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget
-RUN echo "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main" | sudo tee /etc/apt/sources.list.d/llvm.list
-RUN wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
+#RUN echo "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main" | sudo tee /etc/apt/sources.list.d/llvm.list
+#RUN wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
+#RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 # install dependencies for coreclr
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install cmake llvm-3.8 clang-3.8 lldb-3.8 lldb-3.8-dev libunwind8 libunwind8-dev gettext libicu-dev liblttng-ust-dev libcurl4-openssl-dev libssl-dev uuid-dev
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install llvm-3.8 clang-3.8 lldb-3.8 lldb-3.8-dev 
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git cmake libunwind8 libunwind8-dev gettext libicu-dev liblttng-ust-dev libcurl4-openssl-dev libssl-dev uuid-dev
 
 # install dependendies for corefx
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git clang-3.8 cmake make libc6-dev libssl-dev libkrb5-dev libcurl4-openssl-dev zlib1g-dev
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install clang-3.8
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git cmake make libc6-dev libssl-dev libkrb5-dev libcurl4-openssl-dev zlib1g-dev
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libunwind8 libicu52 curl
 
 # install toolchain for linux-arm target build
@@ -30,6 +32,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install qemu binfmt-support qemu-u
 
 # add user `dotnet`
 RUN useradd -u 1000 -s /bin/bash -m dotnet && passwd -d dotnet && cp /root/.bashrc /home/dotnet && cp /root/.profile /home/dotnet && chown -R dotnet.dotnet /home/dotnet && sed -e "/^sudo:/s/$/dotnet/" /etc/group > /etc/group.new && mv /etc/group.new /etc/group
+
+#
+# build llvm-3.8 toolchains for arm build
+#
+
+# install prerequisities for llvm-3.8 build
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install binutils gcc g++ python-dev zlibc zip gzip bzip2 xz-utils
 
 #
 # setup source repo
