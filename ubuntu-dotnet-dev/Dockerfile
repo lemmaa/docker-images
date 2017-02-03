@@ -1,44 +1,82 @@
 FROM ubuntu:14.04
 MAINTAINER Sung-Jae Lee <sjlee@mail.com>
 
-#
-# setup dev env
-#
-
 # initialize apt-get db & key
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget
+RUN DEBIAN_FRONTEND=noninteractive apt-get --fix-missing update 
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+    curl \
+    wget \
+    unzip
+
+# dependencies for CoreCLR & CoreFX build
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+    build-essential \
+    git \
+    make \
+    cmake \
+    gettext \
+    libc6-dev \
+    libcurl4-openssl-dev \
+    libicu52 curl \
+    libicu-dev \
+    libkrb5-dev \
+    liblttng-ust-dev \
+    libssl-dev \
+    libunwind8 \
+    libunwind8-dev \
+    uuid-dev \
+    zlib1g-dev 
+
+# dependencies for linux-armhf crossbuild
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+    binutils-arm-linux-gnueabihf 
+
+# install tools for build-rootfs.sh run
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+    qemu \
+    binfmt-support \
+    qemu-user-static \
+    debootstrap 
+
+# add user `dotnet`
+RUN useradd -u 1000 -G sudo -s /bin/bash -m dotnet && \
+    passwd -d dotnet 
+
+## install prerequisities for llvm-3.8 build
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+#    binutils \
+#    gcc \
+#    g++ \
+#    gcc-arm-linux-gnueabihf \
+#    g++-arm-linux-gnueabihf \
+#    python-dev \
+#    zlibc \
+#    gzip \
+#    bzip2 \
+#    xz-utils
+
+## dependencies for tizen-armel crossbuild
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+#    binutils-arm-linux-gnueabi \
+#    libxml2-utils \
+#    rpm2cpio
+
+# install llvm-3.8 toolchain
 #RUN echo "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main" | sudo tee /etc/apt/sources.list.d/llvm.list
 #RUN wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
 #RUN DEBIAN_FRONTEND=noninteractive apt-get update
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+#    llvm-3.8 \
+#    clang-3.8 \
+#    lldb-3.8 \
+#    lldb-3.8-dev 
 
-# install dependencies for coreclr
-#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install llvm-3.8 clang-3.8 lldb-3.8 lldb-3.8-dev 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git cmake libunwind8 libunwind8-dev gettext libicu-dev liblttng-ust-dev libcurl4-openssl-dev libssl-dev uuid-dev
-
-# install dependendies for corefx
-#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install clang-3.8
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git cmake make libc6-dev libssl-dev libkrb5-dev libcurl4-openssl-dev zlib1g-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libunwind8 libicu52 curl
-
-# install toolchain for linux-arm target build
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-
-# install toolchain for linux-armel target build
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
-
-# install tools for build-rootfs.sh run
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install qemu binfmt-support qemu-user-static debootstrap libxml2-utils rpm2cpio
-
-# add user `dotnet`
-RUN useradd -u 1000 -s /bin/bash -m dotnet && passwd -d dotnet && cp /root/.bashrc /home/dotnet && cp /root/.profile /home/dotnet && chown -R dotnet.dotnet /home/dotnet && sed -e "/^sudo:/s/$/dotnet/" /etc/group > /etc/group.new && mv /etc/group.new /etc/group
-
-#
-# build llvm-3.8 toolchains for arm build
-#
-
-# install prerequisities for llvm-3.8 build
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install binutils gcc g++ python-dev zlibc zip gzip bzip2 xz-utils
+## install toolchain for linux-arm crossbuild
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+#    gcc-arm-linux-gnueabihf \
+#    g++-arm-linux-gnueabihf \
+#    gcc-arm-linux-gnueabi \
+#    g++-arm-linux-gnueabi
 
 #
 # setup source repo
