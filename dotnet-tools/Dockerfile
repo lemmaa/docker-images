@@ -1,6 +1,13 @@
 FROM ubuntu:14.04
 MAINTAINER Sung-Jae Lee <sjlee@mail.com>
 
+#
+# How to build 
+#
+# $ cd Path/To/Dockerfile
+# $ docker build -t lemmaa/dotnet-tools --build-arg UID=$(id -u) --build-arg UNAME=$(whoami) .
+#
+
 # initialize apt-get db & key
 RUN DEBIAN_FRONTEND=noninteractive apt-get --fix-missing update 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
@@ -55,6 +62,27 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
     libxml2-utils \
     rpm2cpio
 
+# install prerequisities for llvm/lldb build                                     
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+	binutils \
+	build-essential \
+	bzip2 \
+	g++ \
+	gcc \
+	gzip \
+	libedit-dev \
+	libncurses5-dev \
+	python2.7-dev \
+	subversion \
+	swig \
+	xz-utils \
+	zlibc 
+
+# install prerequisities for llvm/lldb build                                     
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+	gcc-arm-linux-gnueabihf \
+	g++-arm-linux-gnueabihf
+
 # upgrade vim packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy upgrade vim
 
@@ -66,5 +94,10 @@ ARG UID=1111
 ARG UNAME=dotnet
 RUN useradd -u $UID -G sudo -s /bin/bash -m $UNAME && \
     passwd -d $UNAME
+
+# add symbolic link of /home to /Users for macOS
+RUN ln -s /home /Users
+
+# set work directory
 WORKDIR /home/$UNAME
 
